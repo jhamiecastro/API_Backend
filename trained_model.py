@@ -14,22 +14,28 @@ def predict():
     try:
         data = request.json
 
-        # Extract and encode inputs
-        gender = label_encoders['Gender'].transform([data['gender']])[0]
-        internet = label_encoders['Internet_Access_at_Home'].transform([data['internet']])[0]
-        extracurricular = label_encoders['Extracurricular_Activities'].transform([data['extracurricular']])[0]
-
+        # Extract values
+        gender = data['gender']
         study_hours = float(data['study_hours_per_week'])
         attendance = float(data['attendance_rate'])
         past_scores = float(data['past_exam_scores'])
+        internet = data['internet']
+        extracurricular = data['extracurricular']
         final_exam_score = float(data['final_exam_score'])
 
-        # Create feature array in correct order
-        features = np.array([[gender, study_hours, attendance, past_scores,
-                              internet, extracurricular, final_exam_score]])
+        # Encode categorical inputs
+        gender_encoded = label_encoders['Gender'].transform([gender])[0]
+        internet_encoded = label_encoders['Internet_Access_at_Home'].transform([internet])[0]
+        extra_encoded = label_encoders['Extracurricular_Activities'].transform([extracurricular])[0]
 
-        # Scale and predict
+        # Combine all features in correct order
+        features = np.array([[gender_encoded, study_hours, attendance, past_scores,
+                              internet_encoded, extra_encoded, final_exam_score]])
+
+        # Scale features
         features_scaled = scaler.transform(features)
+
+        # Predict
         prediction = model.predict(features_scaled)[0]
         result = label_encoders['Pass_Fail'].inverse_transform([prediction])[0]
 
