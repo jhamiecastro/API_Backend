@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # 👈 Import CORS
 import joblib
 import numpy as np
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000"])  # 👈 Allow React frontend
 
 # Load trained model and preprocessing tools
 model = joblib.load('trained_data/model_reg.pkl')
